@@ -2,29 +2,25 @@
 <html>
   <head>
     <link
-      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
       rel="stylesheet"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <meta charset="utf-8" />
     <title>Rate My Lambeth</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
-
       body,
       html {
-        font-family:
-          "Roboto",
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
-          "Helvetica",
-          "Arial",
-          sans-serif;
-
+        font-family: "Roboto";
         margin: 0;
         padding: 0;
+        padding-bottom: env(safe-area-inset-bottom);
         height: 100%;
         overflow: hidden;
+        max-height: 100dvh, 100vh;
       }
 
       body {
@@ -36,162 +32,74 @@
       nav {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        padding: 10px 20px;
-        background-color: rgba(255, 255, 255, 0.8);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        z-index: 10;
-        justify-content: end;
-        gap: 10px;
-      }
-
-      dialog {
         padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
 
-        button {
-          float: right;
-          font-size: 16px;
-          font-weight: bold;
-          border: none;
-          cursor: pointer;
-          padding: 10px 20px;
-          border-radius: 5px;
+        div {
+          display: flex;
+          gap: 10px;
+          justify-content: end;
         }
-      }
 
-      dialog::backdrop {
-        background-color: rgb(0 0 0 / 45%);
-        transition:
-          display 0.7s allow-discrete,
-          overlay 0.7s allow-discrete,
-          background-color 0.7s;
+        a {
+          font-weight: bold;
+          font-size: 16px;
+          color: #333;
+          text-decoration: none;
+          border: none;
+          background: none;
+        }
+
+        a:hover {
+          text-decoration: underline;
+        }
       }
 
       #street-view {
         flex-grow: 1;
         width: 100%;
-        height: 50vh; /* Takes up half the viewport height */
-      }
-
-      #info-panel {
-        position: absolute;
-        top: 42px;
-        left: 10px;
-        right: 10px;
-
-        background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 8px;
-        padding: 10px;
-        font-size: 14px;
-        max-height: 30%;
-        overflow-y: auto;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        z-index: 10;
       }
 
       .button-container {
         display: flex;
         height: 16vh;
-      }
 
-      button {
-        font-family:
-          "Roboto",
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
-          "Helvetica",
-          "Arial",
-          sans-serif;
-        font-size: 28px;
-        font-weight: bold;
-        border: none;
-        cursor: pointer;
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-      }
-
-      button::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        transition: all 0.5s ease;
+        button {
+          font-size: 28px;
+          border: none;
+          cursor: pointer;
+          flex: 1;
+          overflow: hidden;
+        }
       }
 
       #vote_not {
         /* responsive font-size */
         font-size: 42px;
-        background: linear-gradient(135deg, #ff4757, #ff6b6b);
-        color: white;
       }
 
       #vote_hot {
         font-size: 42px;
-        background: linear-gradient(135deg, #2ed573, #7bed9f);
-        color: white;
-      }
-
-      button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-      }
-
-      button:active {
-        transform: translateY(-1px);
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-      }
-
-      button:active::before {
-        width: 300px;
-        height: 300px;
-        opacity: 0;
-        transition: 0s;
-      }
-
-      button span {
-        position: relative;
-        z-index: 1;
-      }
-
-      @media (max-height: 600px) {
-        #info-panel {
-          font-size: 12px;
-          padding: 5px;
-        }
-
-        button {
-          font-size: 20px;
-        }
       }
     </style>
   </head>
 
   <body>
     <dialog>
-      <h1>🔥 Hot or 🤮 Not?</h1>
-      <p>Do you think this street is hot or not?</p>
-      <p>Vote now on your phones!</p>
+      <h2>🔥 Hot or 🤮 Not?</h2>
+      <p>Is this street hot or not?</p>
 
-      <button>Close FAQ</button>
+      <button>close</button>
     </dialog>
     <nav>
-      <div>FAQ</div>
+      <div>🌳 rate my lambeth</div>
+      <div>
+        <a href="/static/about.html">about</a>
+        <a href="/static/faq.html">faq</a>
+      </div>
     </nav>
+
     <div id="street-view"></div>
-    <div id="info-panel"></div>
 
     <div class="button-container">
       <button id="vote_not"><span>🤮 not</span></button>
@@ -205,6 +113,10 @@
     defer
   ></script>
   <script>
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    }
+
     let panorama;
     let streetPoints = [];
 
@@ -227,7 +139,6 @@
 
     function getRandomLocation2() {
       const loc = streetPoints[Math.floor(Math.random() * streetPoints.length)];
-      updateInfoPanel(loc);
       return loc;
     }
 
@@ -247,6 +158,8 @@
           fullscreenControl: false,
           enableCloseButton: false,
           clickToGo: false,
+          zoomControl: false,
+          keyboardControl: false,
         },
       );
 
@@ -271,13 +184,6 @@
       setRandomLocation();
     }
 
-    function updateInfoPanel(location) {
-      const infoPanel = document.getElementById("info-panel");
-      infoPanel.innerHTML = `
-                <h3>${location.name || "Unnamed Street"}</h3>
-            `;
-    }
-
     button = document.getElementById("vote_hot");
     button.addEventListener("click", submitHot);
 
@@ -285,7 +191,7 @@
     submit.addEventListener("click", submitNot);
 
     const dialog = document.querySelector("dialog");
-    const faq = document.querySelector("nav div");
+    const faq = document.querySelector("nav button");
     const closeButton = document.querySelector("dialog button");
 
     faq.addEventListener("click", () => {
