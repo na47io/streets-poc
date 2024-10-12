@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Rate My Lambeth</title>
+    <style>
+      #street-view {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="street-view"></div>
+
+    <fieldset>
+      <legend>Is this street hot?</legend>
+
+      <input type="radio" id="yes" name="hotornot" value="yes" />
+      <label for="yes">Yes</label>
+
+      <input type="radio" id="no" name="hotornot" value="no" />
+      <label for="no">No</label>
+
+      <input checked type="radio" id="dunno" name="hotornot" value="dunno" />
+      <label for="dunno">I Dunno</label>
+    </fieldset>
+
+    <button id="new_street">New Street</button>
+    <button id="submit">Submit</button>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_lLDblzEhAKvNL7ppvUnfQxRkFUL08Bk&callback=initialize"
+      async
+      defer
+    ></script>
+    <script>
+      const lambethBounds = {
+        north: 51.468928,
+        south: 51.412459,
+        east: -0.09209,
+        west: -0.150048,
+      };
+
+      let panorama;
+
+      function getRandomLocation() {
+        const lat =
+          Math.random() * (lambethBounds.north - lambethBounds.south) +
+          lambethBounds.south;
+        const lng =
+          Math.random() * (lambethBounds.east - lambethBounds.west) +
+          lambethBounds.west;
+        return { lat, lng };
+      }
+
+      function initialize() {
+        const fenway = getRandomLocation();
+        panorama = new google.maps.StreetViewPanorama(
+          document.getElementById("street-view"),
+          {
+            position: fenway,
+            pov: { heading: 165, pitch: 0 },
+            zoom: 1,
+            // addressControl: false,
+            linksControl: false,
+            motionTracking: false,
+            motionTrackingControl: false,
+            fullscreenControl: false,
+            enableCloseButton: false,
+            clickToGo: false,
+          },
+        );
+
+        panorama.addListener("status_changed", function () {
+          if (panorama.getStatus() !== google.maps.StreetViewStatus.OK) {
+            setRandomLocation();
+          }
+        });
+      }
+
+      function setRandomLocation() {
+        panorama.setPosition(getRandomLocation());
+        console.log(panorama);
+      }
+
+      function submitRating() {
+        alert("thanks!");
+        setRandomLocation();
+      }
+
+      button = document.getElementById("new_street");
+      button.addEventListener("click", setRandomLocation);
+
+      submit = document.getElementById("submit");
+      submit.addEventListener("click", submitRating);
+    </script>
+  </body>
+</html>
