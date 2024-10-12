@@ -35,15 +35,8 @@
       defer
     ></script>
     <script>
-      const lambethBounds = {
-        north: 51.468928,
-        south: 51.412459,
-        east: -0.09209,
-        west: -0.150048,
-      };
-
       let panorama;
-      let streetName;
+      let streetPoints = getStreetPoints();
 
       function getRandomLocation() {
         const lat =
@@ -55,8 +48,12 @@
         return { lat, lng };
       }
 
+      function getRandomLocation2() {
+        return streetPoints[Math.floor(Math.random() * streetPoints.length)];
+      }
+
       function initialize() {
-        const fenway = getRandomLocation();
+        const fenway = getRandomLocation2();
         panorama = new google.maps.StreetViewPanorama(
           document.getElementById("street-view"),
           {
@@ -81,8 +78,9 @@
       }
 
       function setRandomLocation() {
-        panorama.setPosition(getRandomLocation());
-        console.log(panorama);
+        const loc = getRandomLocation2();
+        panorama.setPosition(loc);
+        console.log(loc);
       }
 
       function submitRating() {
