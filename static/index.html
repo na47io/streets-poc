@@ -12,6 +12,7 @@
 
   <body>
     <div id="street-view"></div>
+    <div id="info-panel"></div>
 
     <fieldset>
       <legend>Is this street hot?</legend>
@@ -30,13 +31,20 @@
     <button id="submit">Submit</button>
 
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_lLDblzEhAKvNL7ppvUnfQxRkFUL08Bk&callback=initialize"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_lLDblzEhAKvNL7ppvUnfQxRkFUL08Bk"
       async
       defer
     ></script>
     <script>
       let panorama;
-      let streetPoints = getStreetPoints();
+      let streetPoints = [];
+
+      fetch("/static/data.json")
+        .then((r) => r.json())
+        .then((data) => {
+          streetPoints = data;
+          initialize();
+        });
 
       function getRandomLocation() {
         const lat =
@@ -49,11 +57,15 @@
       }
 
       function getRandomLocation2() {
-        return streetPoints[Math.floor(Math.random() * streetPoints.length)];
+        const loc =
+          streetPoints[Math.floor(Math.random() * streetPoints.length)];
+        updateInfoPanel(loc);
+        return loc;
       }
 
       function initialize() {
         const fenway = getRandomLocation2();
+        console.log(fenway);
         panorama = new google.maps.StreetViewPanorama(
           document.getElementById("street-view"),
           {
@@ -86,6 +98,16 @@
       function submitRating() {
         alert("thanks!");
         setRandomLocation();
+      }
+
+      function updateInfoPanel(location) {
+        const infoPanel = document.getElementById("info-panel");
+        infoPanel.innerHTML = `
+                <h3>${location.name || "Unnamed Street"}</h3>
+                <p>Type: ${location.highway}</p>
+                <p>One-way: ${location.oneway ? "Yes" : "No"}</p>
+                <p>Max Speed: ${location.maxspeed || "Not specified"}</p>
+            `;
       }
 
       button = document.getElementById("new_street");
