@@ -34,7 +34,7 @@ point_id = 0
 
 for idx, street in gdf_streets.iterrows():
     # Generate points along the street
-    num_points = max(2, int(street.geometry.length / 50))  # One point every 50 meters, minimum 2 points
+    num_points = max(2, int(street.geometry.length / 10))  # One point every 10 meters, minimum 2 points
     street_points = generate_points_along_line(street.geometry, num_points)
     
     # Filter points to ensure they're within Lambeth
