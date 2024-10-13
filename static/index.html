@@ -17,7 +17,7 @@
       }
 
       #street-views,
-      .street-view {
+      .street-view-card {
         height: 100%;
         aspect-ratio: 16/16;
       }
@@ -27,26 +27,38 @@
         margin: auto;
       }
 
-      .street-view {
+      .street-view-card {
         position: absolute;
-        background-color: transparent;
+        background-color: whitesmoke;
         border-radius: 5px;
         overflow: hidden;
         box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
         border: 1px solid rgba(0, 0, 0, 0.2);
         transition: all 0.1s linear;
+
+        display: flex;
+        flex-direction: column;
       }
-      .street-view:nth-child(1) {
+
+      .street-view {
+        flex-grow: 1;
+      }
+
+      .street-view-footer {
+        padding: 20px;
+      }
+
+      .street-view-card:nth-child(1) {
         z-index: 5;
       }
 
-      .street-view:nth-child(2) {
+      .street-view-card:nth-child(2) {
         z-index: 4;
         top: 7px;
         transform: scale(0.98);
       }
 
-      .street-view:nth-child(3) {
+      .street-view-card:nth-child(3) {
         z-index: 3;
         top: 14px;
         transform: scale(0.96);
@@ -95,6 +107,26 @@
         animation-fill-mode: both;
         animation: not 0.6s linear;
       }
+
+      .street-view-card:before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        content: "";
+      }
+
+      .animateHot:before {
+        transform: rotateZ(-35deg);
+        background: url(https://i.imgur.com/Zkwj970.png) no-repeat center 10px;
+      }
+
+      .animateNot:before {
+        transform: rotateZ(35deg);
+        background: url(https://i.imgur.com/XqQZ4KR.png) no-repeat center 10px;
+      }
     </style>
   </head>
 
@@ -108,11 +140,7 @@
     </nav>
 
     <main>
-      <div id="street-views">
-        <div class="street-view"></div>
-        <div class="street-view"></div>
-        <div class="street-view"></div>
-      </div>
+      <div id="street-views"></div>
 
       <div class="button-container">
         <button onclick="submitNot()" id="vote_not"><span>🤮 not</span></button>
@@ -164,7 +192,7 @@
     }
 
     function initialize() {
-      const boxes = getAllViewElements();
+      const boxes = [createCard(), createCard(), createCard()];
       for (let i = 0; i < boxes.length; i++) {
         const div = boxes[i];
         initDiv(div, i);
@@ -175,8 +203,9 @@
     // global panoramas array at index ix
     function initDiv(el, ix) {
       const loc = getRandomLocation2();
+      sw = el.querySelector(".street-view");
       panoramas.push(
-        new google.maps.StreetViewPanorama(el, {
+        new google.maps.StreetViewPanorama(sw, {
           position: loc,
           pov: { heading: 165, pitch: 0 },
           zoom: 1,
@@ -204,7 +233,18 @@
     }
 
     function getAllViewElements() {
-      return document.querySelectorAll(".street-view");
+      return document.querySelectorAll(".street-view-card");
+    }
+
+    function createCard() {
+      const location = getRandomLocation2();
+      const newEl = document.createElement("div");
+      newEl.classList.add("street-view-card");
+      newEl.innerHTML = `
+<div class="street-view"></div>
+<div class="street-view-footer"><strong>${location.name}</strong>, Lambeth</div>`;
+      document.getElementById("street-views").appendChild(newEl);
+      return newEl;
     }
 
     function makeDisappearAndPush(el, animationClassName) {
@@ -214,9 +254,7 @@
           el.remove();
 
           // add a new element to the bottom
-          const newEl = document.createElement("div");
-          newEl.classList.add("street-view");
-          document.getElementById("street-views").appendChild(newEl);
+          const newEl = createCard();
           initDiv(newEl, 2); // FIXME always adding on the end of our max element, which is THREE (3)
         },
         { once: true },
