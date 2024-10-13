@@ -72,14 +72,17 @@
         0% {
           transform: scale(1) rotateZ(0deg);
           left: 0;
+          opacity: 1;
         }
         30% {
           transform: scale(1.05) rotateZ(0deg);
           left: 0;
+          opacity: 1;
         }
         100% {
           transform: rotateZ(45deg);
           left: var(--distance);
+          opacity: 0;
         }
       }
 
@@ -92,14 +95,17 @@
         0% {
           transform: scale(1) rotateZ(0deg);
           right: 0;
+          opacity: 1;
         }
         30% {
           transform: scale(1.05) rotateZ(0deg);
           right: 0;
+          opacity: 1;
         }
         100% {
           transform: rotateZ(-45deg);
           right: var(--distance);
+          opacity: 0;
         }
       }
 
