@@ -185,6 +185,7 @@
     );
     let panoramas = [];
     let streetPoints = [];
+    let blocked = false;
 
     fetch("/static/data.json")
       .then((r) => r.json())
@@ -262,6 +263,7 @@
           // add a new element to the bottom
           const newEl = createCard();
           initDiv(newEl, 2); // FIXME always adding on the end of our max element, which is THREE (3)
+          blocked = false;
         },
         { once: true },
       );
@@ -269,6 +271,11 @@
     }
 
     function submitHot() {
+      if (blocked) {
+        return;
+      }
+
+      blocked = true;
       const map = getAllViewElements()[0];
       makeDisappearAndPush(map, "animateHot");
     }
