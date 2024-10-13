@@ -164,7 +164,7 @@
     }
 
     function initialize() {
-      const boxes = document.querySelectorAll(".street-view");
+      const boxes = getAllViewElements();
       for (let i = 0; i < boxes.length; i++) {
         const div = boxes[i];
         initDiv(div, i);
@@ -203,6 +203,10 @@
       panorama.setPosition(loc);
     }
 
+    function getAllViewElements() {
+      return document.querySelectorAll(".street-view");
+    }
+
     function makeDisappearAndPush(el, animationClassName) {
       el.addEventListener(
         "animationend",
@@ -211,7 +215,7 @@
 
           // add a new element to the bottom
           const newEl = document.createElement("div");
-          newEl.classList.add("street-view");
+          newEl.classList.add("street-view-card");
           document.getElementById("street-views").appendChild(newEl);
           initDiv(newEl, 2); // FIXME always adding on the end of our max element, which is THREE (3)
         },
@@ -221,12 +225,12 @@
     }
 
     function submitHot() {
-      const map = document.querySelectorAll(".street-view")[0];
+      const map = getAllViewElements()[0];
       makeDisappearAndPush(map, "animateHot");
     }
 
     function submitNot() {
-      const map = document.querySelectorAll(".street-view")[0];
+      const map = getAllViewElements()[0];
       makeDisappearAndPush(map, "animateNot");
     }
   </script>
