@@ -133,6 +133,46 @@
         transform: rotateZ(35deg);
         background: url(https://i.imgur.com/XqQZ4KR.png) no-repeat center 10px;
       }
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .controls {
+        display: flex;
+        gap: 10px;
+
+        .button-box,
+        button {
+          border-radius: 50%;
+          aspect-ratio: 1/1;
+        }
+
+        .button-box {
+          height: 90px;
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+          padding: 16px;
+          background: #eee;
+        }
+
+        button {
+          font-size: 32px;
+          border: none;
+          width: 100%;
+
+          background: white;
+
+          box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+          transition: transform 0.1s;
+        }
+
+        button:active {
+          transform: scale(0.9);
+          transition: all 0.05s linear;
+        }
+      }
     </style>
   </head>
 
@@ -149,8 +189,18 @@
       <div id="street-views"></div>
 
       <div class="button-container">
-        <button onclick="submitNot()" id="vote_not"><span>🤮 not</span></button>
-        <button onclick="submitHot()" id="vote_hot"><span>🔥 hot</span></button>
+        <div class="controls">
+          <div class="button-box">
+            <button onclick="submitNot()" id="vote_not">
+              <span>🤮</span>
+            </button>
+          </div>
+          <div class="button-box">
+            <button onclick="submitHot()" id="vote_hot">
+              <span>🔥</span>
+            </button>
+          </div>
+        </div>
       </div>
     </main>
   </body>
@@ -281,6 +331,11 @@
     }
 
     function submitNot() {
+      if (blocked) {
+        return;
+      }
+
+      blocked = true;
       const map = getAllViewElements()[0];
       makeDisappearAndPush(map, "animateNot");
     }
