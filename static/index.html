@@ -12,85 +12,63 @@
     <meta charset="utf-8" />
     <title>Rate My Lambeth</title>
     <style>
-      body,
-      html {
-        font-family: "Roboto";
-        margin: 0;
-        padding: 0;
-        padding-bottom: env(safe-area-inset-bottom);
-        height: 100%;
-        overflow: hidden;
-        max-height: 100dvh, 100vh;
+      main {
+        height: 70vh;
+        padding: 80px;
       }
-
-      body {
-        display: flex;
-        flex-direction: column;
-        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-      }
-
-      nav {
-        display: flex;
-        justify-content: space-between;
-        padding: 20px;
-        box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
-
-        div {
-          display: flex;
-          gap: 10px;
-          justify-content: end;
-        }
-
-        a {
-          font-weight: bold;
-          font-size: 16px;
-          color: #333;
-          text-decoration: none;
-          border: none;
-          background: none;
-        }
-
-        a:hover {
-          text-decoration: underline;
-        }
-      }
-
       #street-view {
-        flex-grow: 1;
-        width: 100%;
+        height: 100%;
+        aspect-ratio: 16/16;
+        margin: auto;
       }
 
-      .button-container {
-        display: flex;
-        height: 16vh;
+      :root {
+        --distance: 600px;
+      }
 
-        button {
-          font-size: 28px;
-          border: none;
-          cursor: pointer;
-          flex: 1;
-          overflow: hidden;
+      @keyframes hot {
+        0% {
+          transform: scale(1) rotateZ(0deg);
+          left: 0;
+        }
+        30% {
+          transform: scale(1.05) rotateZ(0deg);
+          left: 0;
+        }
+        100% {
+          transform: rotateZ(45deg);
+          left: var(--distance);
         }
       }
 
-      #vote_not {
-        /* responsive font-size */
-        font-size: 42px;
+      .animateHot {
+        animation-fill-mode: both;
+        animation: hot 0.6s linear;
       }
 
-      #vote_hot {
-        font-size: 42px;
+      @keyframes not {
+        0% {
+          transform: scale(1) rotateZ(0deg);
+          right: 0;
+        }
+        30% {
+          transform: scale(1.05) rotateZ(0deg);
+          right: 0;
+        }
+        100% {
+          transform: rotateZ(-45deg);
+          right: var(--distance);
+        }
+      }
+
+      .animateNot {
+        animation-fill-mode: both;
+        animation: not 0.6s linear;
       }
     </style>
   </head>
 
   <body>
-    <dialog>
-      <h2>🔥 Hot or 🤮 Not?</h2>
-      <p>Is this street hot or not?</p>
-
-      <button>close</button>
-    </dialog>
     <nav>
       <div>🌳 rate my lambeth</div>
       <div>
@@ -99,12 +77,14 @@
       </div>
     </nav>
 
-    <div id="street-view"></div>
+    <main>
+      <div id="street-view"></div>
 
-    <div class="button-container">
-      <button id="vote_not"><span>🤮 not</span></button>
-      <button id="vote_hot"><span>🔥 hot</span></button>
-    </div>
+      <div class="button-container">
+        <button onclick="submitNot()" id="vote_not"><span>🤮 not</span></button>
+        <button onclick="submitHot()" id="vote_hot"><span>🔥 hot</span></button>
+      </div>
+    </main>
   </body>
 
   <script
@@ -135,11 +115,6 @@
       },
       { capture: true },
     );
-
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen();
-    }
-
     let panorama;
     let streetPoints = [];
 
@@ -150,41 +125,18 @@
         initialize();
       });
 
-    function getRandomLocation() {
-      const lat =
-        Math.random() * (lambethBounds.north - lambethBounds.south) +
-        lambethBounds.south;
-      const lng =
-        Math.random() * (lambethBounds.east - lambethBounds.west) +
-        lambethBounds.west;
-      return { lat, lng };
-    }
-
     function getRandomLocation2() {
-      const loc = streetPoints[Math.floor(Math.random() * streetPoints.length)];
-      return loc;
+      return streetPoints[Math.floor(Math.random() * streetPoints.length)];
     }
 
     function initialize() {
       const fenway = getRandomLocation2();
-      console.log(fenway);
-      panorama = new google.maps.StreetViewPanorama(
-        document.getElementById("street-view"),
-        {
-          position: fenway,
-          pov: { heading: 165, pitch: 0 },
-          zoom: 1,
-          addressControl: false,
-          linksControl: false,
-          motionTracking: false,
-          motionTrackingControl: false,
-          fullscreenControl: false,
-          enableCloseButton: false,
-          clickToGo: false,
-          zoomControl: false,
-          keyboardControl: false,
-        },
-      );
+      const div = document.getElementById("street-view");
+      panorama = new google.maps.StreetViewPanorama(div, {
+        position: fenway,
+      });
+
+      console.log("miowww");
 
       panorama.addListener("status_changed", function () {
         if (panorama.getStatus() !== google.maps.StreetViewStatus.OK) {
@@ -196,33 +148,27 @@
     function setRandomLocation() {
       const loc = getRandomLocation2();
       panorama.setPosition(loc);
-      console.log(loc);
+    }
+
+    function makeDisappear(el, animationClassName) {
+      el.addEventListener(
+        "animationend",
+        function () {
+          el.remove();
+        },
+        { once: true },
+      );
+      el.classList.add(animationClassName);
     }
 
     function submitHot() {
-      setRandomLocation();
+      const map = document.getElementById("street-view");
+      makeDisappear(map, "animateHot");
     }
 
     function submitNot() {
-      setRandomLocation();
+      const map = document.getElementById("street-view");
+      makeDisappear(map, "animateNot");
     }
-
-    button = document.getElementById("vote_hot");
-    button.addEventListener("click", submitHot);
-
-    submit = document.getElementById("vote_not");
-    submit.addEventListener("click", submitNot);
-
-    const dialog = document.querySelector("dialog");
-    const faq = document.querySelector("nav button");
-    const closeButton = document.querySelector("dialog button");
-
-    faq.addEventListener("click", () => {
-      dialog.showModal();
-    });
-
-    closeButton.addEventListener("click", () => {
-      dialog.close();
-    });
   </script>
 </html>
