@@ -169,12 +169,13 @@
       .button-box {
         width: auto;
         box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-        padding: 16px;
+        padding: 8px;
         background: #eee;
+        min-width: 50px;
       }
 
       button {
-        font-size: 32px;
+        font-size: 16px;
         border: none;
         width: 100%;
 
@@ -182,6 +183,16 @@
 
         box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
         transition: transform 0.1s;
+      }
+
+      /* make button font-size larger on bigger screents*/
+      @media (min-width: 1024px) {
+        button {
+          font-size: 24px;
+        }
+        .button-box {
+          padding: 16px;
+        }
       }
 
       button:active {
@@ -203,12 +214,12 @@
         <div class="controls">
           <div class="button-box">
             <button onclick="submitNot()" id="vote_not">
-              <span>🤮</span>
+              <span>❌</span>
             </button>
           </div>
           <div class="button-box">
             <button onclick="submitHot()" id="vote_hot">
-              <span>🔥</span>
+              <span>💚</span>
             </button>
           </div>
         </div>
