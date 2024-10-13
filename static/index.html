@@ -14,12 +14,42 @@
     <style>
       main {
         height: 70vh;
-        padding: 80px;
       }
-      #street-view {
+
+      #street-views,
+      .street-view {
         height: 100%;
         aspect-ratio: 16/16;
+      }
+
+      #street-views {
+        position: relative;
         margin: auto;
+      }
+
+      .street-view {
+        position: absolute;
+        background-color: transparent;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        transition: all 0.1s linear;
+      }
+      .street-view:nth-child(1) {
+        z-index: 5;
+      }
+
+      .street-view:nth-child(2) {
+        z-index: 4;
+        top: 7px;
+        transform: scale(0.98);
+      }
+
+      .street-view:nth-child(3) {
+        z-index: 3;
+        top: 14px;
+        transform: scale(0.96);
       }
 
       :root {
@@ -78,7 +108,11 @@
     </nav>
 
     <main>
-      <div id="street-view"></div>
+      <div id="street-views">
+        <div class="street-view"></div>
+        <div class="street-view"></div>
+        <div class="street-view"></div>
+      </div>
 
       <div class="button-container">
         <button onclick="submitNot()" id="vote_not"><span>🤮 not</span></button>
@@ -115,7 +149,7 @@
       },
       { capture: true },
     );
-    let panorama;
+    let panoramas = [];
     let streetPoints = [];
 
     fetch("/static/data.json")
@@ -130,16 +164,35 @@
     }
 
     function initialize() {
-      const fenway = getRandomLocation2();
-      const div = document.getElementById("street-view");
-      panorama = new google.maps.StreetViewPanorama(div, {
-        position: fenway,
-      });
+      const boxes = document.querySelectorAll(".street-view");
+      for (let i = 0; i < boxes.length; i++) {
+        const div = boxes[i];
+        initDiv(div, i);
+      }
+    }
 
-      console.log("miowww");
-
-      panorama.addListener("status_changed", function () {
-        if (panorama.getStatus() !== google.maps.StreetViewStatus.OK) {
+    // mount a panorama to an element and save the reference to element in the
+    // global panoramas array at index ix
+    function initDiv(el, ix) {
+      const loc = getRandomLocation2();
+      panoramas.push(
+        new google.maps.StreetViewPanorama(el, {
+          position: loc,
+          pov: { heading: 165, pitch: 0 },
+          zoom: 1,
+          addressControl: false,
+          linksControl: false,
+          motionTracking: false,
+          motionTrackingControl: false,
+          fullscreenControl: false,
+          enableCloseButton: false,
+          clickToGo: false,
+          zoomControl: false,
+          keyboardControl: false,
+        }),
+      );
+      panoramas[ix].addListener("status_changed", function () {
+        if (panoramas[ix].getStatus() !== google.maps.StreetViewStatus.OK) {
           setRandomLocation();
         }
       });
@@ -150,11 +203,17 @@
       panorama.setPosition(loc);
     }
 
-    function makeDisappear(el, animationClassName) {
+    function makeDisappearAndPush(el, animationClassName) {
       el.addEventListener(
         "animationend",
         function () {
           el.remove();
+
+          // add a new element to the bottom
+          const newEl = document.createElement("div");
+          newEl.classList.add("street-view");
+          document.getElementById("street-views").appendChild(newEl);
+          initDiv(newEl, 2); // FIXME always adding on the end of our max element, which is THREE (3)
         },
         { once: true },
       );
@@ -162,13 +221,13 @@
     }
 
     function submitHot() {
-      const map = document.getElementById("street-view");
-      makeDisappear(map, "animateHot");
+      const map = document.querySelectorAll(".street-view")[0];
+      makeDisappearAndPush(map, "animateHot");
     }
 
     function submitNot() {
-      const map = document.getElementById("street-view");
-      makeDisappear(map, "animateNot");
+      const map = document.querySelectorAll(".street-view")[0];
+      makeDisappearAndPush(map, "animateNot");
     }
   </script>
 </html>
