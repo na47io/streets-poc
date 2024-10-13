@@ -334,6 +334,16 @@
           blocked = false;
 
           // TODO send post request to /api/vote
+          fetch("/api/vote", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: location.name,
+              vote: animationClassName === "animateHot" ? "hot" : "not",
+            }),
+          });
         },
         { once: true },
       );
