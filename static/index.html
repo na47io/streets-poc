@@ -252,9 +252,10 @@
       },
       { capture: true },
     );
-    let panoramas = [];
     let streetPoints = [];
     let blocked = false;
+
+    let stack = [];
 
     fetch("/static/data.json")
       .then((r) => r.json())
@@ -268,44 +269,36 @@
     }
 
     function initialize() {
-      const boxes = [createCard(), createCard(), createCard()];
-      for (let i = 0; i < boxes.length; i++) {
-        const div = boxes[i];
-        initDiv(div, i);
+      const objects = [createCard(), createCard(), createCard()];
+      for (let i = 0; i < objects.length; i++) {
+        const { element, location } = objects[i];
+        initDiv(element, location, i);
       }
     }
 
     // mount a panorama to an element and save the reference to element in the
     // global panoramas array at index ix
-    function initDiv(el, ix) {
-      const loc = getRandomLocation2();
-      sw = el.querySelector(".street-view");
-      panoramas.push(
-        new google.maps.StreetViewPanorama(sw, {
-          position: loc,
-          pov: { heading: 165, pitch: 0 },
-          zoom: 1,
-          addressControl: false,
-          linksControl: false,
-          motionTracking: false,
-          motionTrackingControl: false,
-          fullscreenControl: false,
-          enableCloseButton: false,
-          clickToGo: false,
-          zoomControl: false,
-          keyboardControl: false,
-        }),
-      );
-      panoramas[ix].addListener("status_changed", function () {
-        if (panoramas[ix].getStatus() !== google.maps.StreetViewStatus.OK) {
+    function initDiv(element, location, ix) {
+      sw = element.querySelector(".street-view");
+      const panorama = new google.maps.StreetViewPanorama(sw, {
+        position: location,
+        pov: { heading: 165, pitch: 0 },
+        zoom: 1,
+        addressControl: false,
+        linksControl: false,
+        motionTracking: false,
+        motionTrackingControl: false,
+        fullscreenControl: false,
+        enableCloseButton: false,
+        clickToGo: false,
+        zoomControl: false,
+        keyboardControl: false,
+      });
+      panorama.addListener("status_changed", function () {
+        if (panorama.getStatus() !== google.maps.StreetViewStatus.OK) {
           setRandomLocation();
         }
       });
-    }
-
-    function setRandomLocation() {
-      const loc = getRandomLocation2();
-      panorama.setPosition(loc);
     }
 
     function getAllViewElements() {
@@ -314,13 +307,19 @@
 
     function createCard() {
       const location = getRandomLocation2();
-      const newEl = document.createElement("div");
-      newEl.classList.add("street-view-card");
-      newEl.innerHTML = `
+      const element = document.createElement("div");
+      element.classList.add("street-view-card");
+      element.innerHTML = `
 <div class="street-view"></div>
 <div class="street-view-footer"><strong>${location.name}</strong>, Lambeth</div>`;
-      document.getElementById("street-views").appendChild(newEl);
-      return newEl;
+      document.getElementById("street-views").appendChild(element);
+
+      stack.push(location);
+
+      return {
+        element,
+        location,
+      };
     }
 
     function makeDisappearAndPush(el, animationClassName) {
@@ -330,9 +329,11 @@
           el.remove();
 
           // add a new element to the bottom
-          const newEl = createCard();
-          initDiv(newEl, 2); // FIXME always adding on the end of our max element, which is THREE (3)
+          const { element, location } = createCard();
+          initDiv(element, location, 2); // FIXME always adding on the end of our max element, which is THREE (3)
           blocked = false;
+
+          // TODO send post request to /api/vote
         },
         { once: true },
       );
